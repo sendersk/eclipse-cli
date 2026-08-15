@@ -11,3 +11,11 @@ def test_main_runs_without_error(caplog) -> None:
         main()
 
     assert "Eclipse CLI application started" in caplog.text
+
+
+def test_main_logs_application_start(caplog) -> None:
+    """Verify that the application logs its startup message."""
+    with caplog.at_level(logging.INFO):
+        main()
+
+    assert "Eclipse CLI application started in development environment" in caplog.text
