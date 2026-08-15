@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from eclipse_cli.config import Settings
+from eclipse_cli.config import ConfigurationError, Settings, load_settings
 
 
 def test_settings_accept_valid_configuration() -> None:
@@ -56,3 +56,47 @@ def test_logging_file_can_be_disabled() -> None:
     )
 
     assert settings.logging.file is None
+
+
+def test_load_settings_from_yaml_file(tmp_path: Path) -> None:
+    """Verify that settings can be loaded from a YAML file."""
+    config_file = tmp_path / "settings.yaml"
+    config_file.write_text(
+        """
+application:
+    name: eclipse-cli
+    environment: test
+        
+logging:
+    level: DEBUG
+    file: logs/test.log        
+""",
+        encoding="utf-8",
+    )
+
+    settings = load_settings(config_file)
+
+    assert settings.application.name == "eclipse-cli"
+    assert settings.application.environment == "test"
+    assert settings.logging.level == "DEBUG"
+    assert settings.logging.file == Path("logs/test.log")
+
+
+def test_load_settings_raises_error_for_missing_file(tmp_path: Path) -> None:
+    """Verify that a missing configuration file raises an error."""
+    config_file = tmp_path / "missing.yaml"
+
+    with pytest.raises(ConfigurationError, match="Unable to read"):
+        load_settings(config_file)
+
+
+def test_load_settings_raises_error_for_invalid_yaml(tmp_path: Path) -> None:
+    """Verify that invalid YAML raises a configuration error."""
+    config_file = tmp_path / "invalid.yaml"
+    config_file.write_text(
+        "application: [invalid",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ConfigurationError, match="Unable to parse"):
+        load_settings(config_file)

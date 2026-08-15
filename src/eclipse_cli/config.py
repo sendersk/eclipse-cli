@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+import yaml
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -30,3 +31,38 @@ class Settings(BaseModel):
 
     application: ApplicationSettings
     logging: LoggingSettings
+
+
+class ConfigurationError(Exception):
+    """Raised when application configuration cannot be loaded."""
+
+
+def load_settings(path: Path) -> Settings:
+    """
+    Load and validate application settings from a YAML file.
+
+    Args:
+        path: Path to the YAML configuration file.
+
+    Returns:
+        Validated application settings.
+
+    Raises:
+        ConfigurationError: If the configuration file cannot be read or parsed.
+    """
+    try:
+        with path.open("r", encoding="utf-8") as file:
+            data = yaml.safe_load(file)
+    except OSError as error:
+        raise ConfigurationError(
+            f"Unable to read configuration file: {path}"
+        ) from error
+    except yaml.YAMLError as error:
+        raise ConfigurationError(
+            f"Unable to parse configuration file: {path}"
+        ) from error
+
+    try:
+        return Settings.model_validate(data)
+    except (TypeError, ValueError) as error:
+        raise ConfigurationError(f"Invalid configuration data in: {path}") from error
