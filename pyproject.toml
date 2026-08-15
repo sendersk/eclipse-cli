@@ -8,6 +8,26 @@ license = { file = "LICENSE" }
 authors = [
     { name = "Przemyslaw Senderski" },
 ]
+keywords = [
+    "astronomy",
+    "eclipse",
+    "solar-eclipse",
+    "python",
+    "cli",
+    "jpl",
+    "ephemeris",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Astronomy",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 dependencies = []
 
 [dependency-groups]
