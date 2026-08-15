@@ -36,6 +36,5 @@ def test_configure_logging_without_file_uses_console_only() -> None:
     root_logger = logging.getLogger()
 
     assert all(
-        not isinstance(handler, logging.FileHandler)
-        for handler in root_logger.handlers
+        not isinstance(handler, logging.FileHandler) for handler in root_logger.handlers
     )
