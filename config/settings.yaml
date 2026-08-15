@@ -1,0 +1,7 @@
+application:
+  name: eclipse-cli
+  environment: development
+
+logging:
+  level: INFO
+  file: logs/eclipse-cli.log
