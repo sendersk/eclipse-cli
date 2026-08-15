@@ -31,7 +31,7 @@ def configure_logging(
         level=level,
         format=DEFAULT_LOG_FORMAT,
         handlers=handlers,
-        force=False,
+        force=True,
     )
 
 
