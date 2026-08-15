@@ -7,6 +7,9 @@ from pydantic import ValidationError
 
 from eclipse_cli.config import ConfigurationError, Settings, load_settings
 
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+CONFIG_PATH = PROJECT_ROOT / "config" / "settings.yaml"
+
 
 def test_settings_accept_valid_configuration() -> None:
     """Verify that valid configuration data is accepted."""
@@ -100,3 +103,12 @@ def test_load_settings_raises_error_for_invalid_yaml(tmp_path: Path) -> None:
 
     with pytest.raises(ConfigurationError, match="Unable to parse"):
         load_settings(config_file)
+
+
+def test_default_configuration_is_valid() -> None:
+    """Verify that the default project configuration is valid."""
+    settings = load_settings(CONFIG_PATH)
+
+    assert settings.application.name == "eclipse-cli"
+    assert settings.application.environment == "development"
+    assert settings.logging.level == "INFO"
