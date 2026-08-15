@@ -3,7 +3,9 @@
 import logging
 from pathlib import Path
 
-from eclipse_cli.logging import configure_logging, get_logger
+import pytest
+
+from eclipse_cli.logging import configure_logging, get_logger, parse_log_level
 
 
 def test_get_logger_returns_named_logger() -> None:
@@ -17,7 +19,10 @@ def test_configure_logging_creates_log_file(tmp_path: Path) -> None:
     """Verify that logging configuration creates the requested log file."""
     log_file = tmp_path / "application.log"
 
-    configure_logging(log_file=log_file)
+    configure_logging(
+        level=logging.INFO,
+        log_file=log_file,
+    )
 
     logger = get_logger("test.application")
     logger.info("test message")
@@ -31,10 +36,34 @@ def test_configure_logging_creates_log_file(tmp_path: Path) -> None:
 
 def test_configure_logging_without_file_uses_console_only() -> None:
     """Verify that file logging can be disabled."""
-    configure_logging(log_file=None)
+    configure_logging(
+        level=logging.INFO,
+        log_file=None,
+    )
 
     root_logger = logging.getLogger()
 
     assert all(
         not isinstance(handler, logging.FileHandler) for handler in root_logger.handlers
     )
+
+
+def test_parse_log_level_returns_logging_constant() -> None:
+    """Verify that textual log levels are converted correctly."""
+    assert parse_log_level("DEBUG") == logging.DEBUG
+    assert parse_log_level("INFO") == logging.INFO
+    assert parse_log_level("WARNING") == logging.WARNING
+    assert parse_log_level("ERROR") == logging.ERROR
+    assert parse_log_level("CRITICAL") == logging.CRITICAL
+
+
+def test_parse_log_level_is_case_insensitive() -> None:
+    """Verify that log level parsing is case-insensitive."""
+    assert parse_log_level("info") == logging.INFO
+    assert parse_log_level("Warning") == logging.WARNING
+
+
+def test_parse_log_level_rejects_unknown_level() -> None:
+    """Verify that unsupported log levels raise an error."""
+    with pytest.raises(ValueError, match="Unsupported logging level"):
+        parse_log_level("INVALID")
