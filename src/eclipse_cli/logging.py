@@ -33,3 +33,16 @@ def configure_logging(
         handlers=handlers,
         force=True,
     )
+
+
+def get_logger(name: str) -> logging.Logger:
+    """
+    Return a logger with the given name.
+
+    Args:
+        name: Logger name, typically the module's ``__name__``.
+
+    Returns:
+        Configured logger instance.
+    """
+    return logging.getLogger(name)
