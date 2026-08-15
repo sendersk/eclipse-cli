@@ -1,0 +1,1 @@
+"""Eclipse CLI package."""

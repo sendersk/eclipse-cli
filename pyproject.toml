@@ -1,0 +1,20 @@
+[project]
+name = "eclipse-cli"
+version = "0.1.0"
+description = "A Python CLI for calculating local visibility of the 2026 total solar eclipse."
+readme = "README.md"
+requires-python = ">=3.13"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Przemyslaw Senderski" },
+]
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
