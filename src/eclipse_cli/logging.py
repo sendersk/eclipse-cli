@@ -9,8 +9,8 @@ DEFAULT_LOG_FILE = Path("logs/eclipse-cli.log")
 
 
 def configure_logging(
-        level: int = DEFAULT_LOG_LEVEL,
-        log_file: Path | None = DEFAULT_LOG_FILE,
+    level: int = DEFAULT_LOG_LEVEL,
+    log_file: Path | None = DEFAULT_LOG_FILE,
 ) -> None:
     """
     Configure application-wide logging.
@@ -31,7 +31,7 @@ def configure_logging(
         level=level,
         format=DEFAULT_LOG_FORMAT,
         handlers=handlers,
-        force=True,
+        force=False,
     )
 
 
