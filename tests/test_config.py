@@ -112,3 +112,36 @@ def test_default_configuration_is_valid() -> None:
     assert settings.application.name == "eclipse-cli"
     assert settings.application.environment == "development"
     assert settings.logging.level == "INFO"
+
+
+def test_settings_reject_invalid_log_level() -> None:
+    """Verify that unsupported log levels are rejected."""
+    with pytest.raises(ValidationError):
+        Settings(
+            application={
+                "name": "eclipse-cli",
+                "environment": "development",
+            },
+            logging={
+                "level": "INVALID",
+            },
+        )
+
+
+@pytest.mark.parametrize(
+    "level",
+    ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+)
+def test_settings_accept_supported_log_levels(level: str) -> None:
+    """Verify that all supported log levels are accepted."""
+    settings = Settings(
+        application={
+            "name": "eclipse-cli",
+            "environment": "development",
+        },
+        logging={
+            "level": level,
+        },
+    )
+
+    assert settings.logging.level == level

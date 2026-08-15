@@ -3,9 +3,9 @@
 import logging
 from pathlib import Path
 
-import pytest
-
+from eclipse_cli.config import load_settings
 from eclipse_cli.logging import configure_logging, get_logger, parse_log_level
+from eclipse_cli.main import CONFIG_PATH
 
 
 def test_get_logger_returns_named_logger() -> None:
@@ -57,13 +57,14 @@ def test_parse_log_level_returns_logging_constant() -> None:
     assert parse_log_level("CRITICAL") == logging.CRITICAL
 
 
-def test_parse_log_level_is_case_insensitive() -> None:
-    """Verify that log level parsing is case-insensitive."""
-    assert parse_log_level("info") == logging.INFO
-    assert parse_log_level("Warning") == logging.WARNING
+def test_default_configuration_uses_valid_log_level() -> None:
+    """Verify that the default YAML contains a supported log level."""
+    settings = load_settings(CONFIG_PATH)
 
-
-def test_parse_log_level_rejects_unknown_level() -> None:
-    """Verify that unsupported log levels raise an error."""
-    with pytest.raises(ValueError, match="Unsupported logging level"):
-        parse_log_level("INVALID")
+    assert settings.logging.level in {
+        "DEBUG",
+        "INFO",
+        "WARNING",
+        "ERROR",
+        "CRITICAL",
+    }

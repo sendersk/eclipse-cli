@@ -1,6 +1,7 @@
 """Application configuration models."""
 
 from pathlib import Path
+from typing import Literal
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
@@ -15,12 +16,15 @@ class ApplicationSettings(BaseModel):
     environment: str = Field(min_length=1)
 
 
+LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+
+
 class LoggingSettings(BaseModel):
     """Logging configuration."""
 
     model_config = ConfigDict(extra="forbid")
 
-    level: str = Field(default="INFO", min_length=1)
+    level: LogLevel = "INFO"
     file: Path | None = Path("logs/eclipse-cli.log")
 
 

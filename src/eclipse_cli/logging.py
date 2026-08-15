@@ -2,8 +2,10 @@
 
 import logging
 from pathlib import Path
+from typing import Literal
 
 DEFAULT_LOG_FORMAT = "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
 
 def configure_logging(
@@ -58,23 +60,14 @@ def get_logger(name: str) -> logging.Logger:
     return logging.getLogger(name)
 
 
-def parse_log_level(level: str) -> int:
+def parse_log_level(level: LogLevel) -> int:
     """
-    Convert a textual log level into a logging constant.
+    Convert a validated log level into a logging constant.
 
     Args:
-        level: Textual logging level such as ``INFO`` or ``DEBUG``.
+        level: Validated textual logging level.
 
     Returns:
         Corresponding Python logging level.
-
-    Raises:
-        ValueError: If the provided level is not supported.
     """
-    normalized_level = level.upper()
-    log_level = logging.getLevelNamesMapping().get(normalized_level)
-
-    if log_level is None or not isinstance(log_level, int):
-        raise ValueError(f"Unsupported logging level: {level}")
-
-    return log_level
+    return logging.getLevelNamesMapping()[level]
