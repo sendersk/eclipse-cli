@@ -36,3 +36,19 @@ def test_main_returns_configuration_error_code(
     monkeypatch.setattr(application, "CONFIG_PATH", missing_config)
 
     assert application.main() == 2
+
+
+def test_main_returns_configuration_error_for_invalid_yaml(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    """Verify that invalid YAML returns the configuration error code."""
+    config_file = tmp_path / "invalid.yaml"
+    config_file.write_text(
+        "application: [invalid",
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr(application, "CONFIG_PATH", config_file)
+
+    assert application.main() == 2
