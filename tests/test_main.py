@@ -52,3 +52,27 @@ def test_main_returns_configuration_error_for_invalid_yaml(
     monkeypatch.setattr(application, "CONFIG_PATH", config_file)
 
     assert application.main() == 2
+
+
+def test_main_returns_configuration_error_for_invalid_settings(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    """Verify that invalid settings return the configuration error code."""
+    config_file = tmp_path / "settings.yaml"
+    config_file.write_text(
+        """
+application:
+  name: eclipse-cli
+  environment: development
+
+logging:
+  level: INVALID
+  file: logs/eclipse-cli.log
+""",
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr(application, "CONFIG_PATH", config_file)
+
+    assert application.main() == 2
