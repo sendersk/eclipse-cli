@@ -69,6 +69,4 @@ def load_settings(path: Path) -> Settings:
     try:
         return Settings.model_validate(data)
     except ValidationError as error:
-        raise ConfigurationError(
-            f"Invalid configuration data in: {path}"
-        ) from error
+        raise ConfigurationError(f"Invalid configuration data in: {path}") from error

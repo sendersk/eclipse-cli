@@ -1,9 +1,9 @@
 """Tests for the application entry point."""
 
-from pathlib import Path
 import logging
 import subprocess
 import sys
+from pathlib import Path
 
 import eclipse_cli.main as application
 from eclipse_cli.main import main
@@ -23,9 +23,7 @@ def test_main_logs_application_start(caplog) -> None:
         exit_code = main()
 
     assert exit_code == 0
-    assert "Eclipse CLI application started in development environment" in (
-        caplog.text
-    )
+    assert "Eclipse CLI application started in development environment" in (caplog.text)
 
 
 def test_main_returns_configuration_error_code(

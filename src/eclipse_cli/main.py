@@ -9,7 +9,7 @@ logger = get_logger(__name__)
 CONFIG_PATH = Path("config/settings.yaml")
 
 
-def main() -> None:
+def main() -> int:
     """Run the Eclipse CLI application."""
     try:
         settings = load_settings(CONFIG_PATH)
