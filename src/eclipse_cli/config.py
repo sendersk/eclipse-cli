@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Literal
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 
 class ApplicationSettings(BaseModel):
@@ -68,5 +68,7 @@ def load_settings(path: Path) -> Settings:
 
     try:
         return Settings.model_validate(data)
-    except (TypeError, ValueError) as error:
-        raise ConfigurationError(f"Invalid configuration data in: {path}") from error
+    except ValidationError as error:
+        raise ConfigurationError(
+            f"Invalid configuration data in: {path}"
+        ) from error
