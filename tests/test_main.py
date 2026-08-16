@@ -2,6 +2,8 @@
 
 from pathlib import Path
 import logging
+import subprocess
+import sys
 
 import eclipse_cli.main as application
 from eclipse_cli.main import main
@@ -76,3 +78,15 @@ logging:
     monkeypatch.setattr(application, "CONFIG_PATH", config_file)
 
     assert application.main() == 2
+
+
+def test_application_exits_with_zero_for_valid_configuration() -> None:
+    """Verify that the application process exits successfully."""
+    result = subprocess.run(
+        [sys.executable, "-m", "eclipse_cli.main"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
