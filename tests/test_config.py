@@ -145,3 +145,53 @@ def test_settings_accept_supported_log_levels(level: str) -> None:
     )
 
     assert settings.logging.level == level
+
+
+def test_logging_settings_use_defaults() -> None:
+    """Verify that logging settings provide expected defaults."""
+    settings = Settings(
+        application={
+            "name": "eclipse-cli",
+            "environment": "test",
+        },
+        logging={},
+    )
+
+    assert settings.logging.level == "INFO"
+    assert settings.logging.file == Path("logs/eclipse-cli.log")
+
+
+def test_settings_reject_missing_application() -> None:
+    """Verify that application settings are required."""
+    with pytest.raises(ValidationError):
+        Settings(
+            logging={
+                "level": "INFO",
+            },
+        )
+
+
+def test_settings_reject_missing_logging() -> None:
+    """Verify that logging settings are required."""
+    with pytest.raises(ValidationError):
+        Settings(
+            application={
+                "name": "eclipse-cli",
+                "environment": "test",
+            },
+        )
+
+
+def test_settings_reject_unknown_root_fields() -> None:
+    """Verify that unknown root configuration fields are rejected."""
+    with pytest.raises(ValidationError):
+        Settings(
+            application={
+                "name": "eclipse-cli",
+                "environment": "test",
+            },
+            logging={
+                "level": "INFO",
+            },
+            unknown="value",
+        )
