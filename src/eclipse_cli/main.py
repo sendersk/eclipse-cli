@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+from eclipse_cli.cli import app
 from eclipse_cli.config import ConfigurationError, load_settings
 from eclipse_cli.logging import configure_logging, get_logger, parse_log_level
 
@@ -31,4 +32,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    app()
