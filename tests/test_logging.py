@@ -3,9 +3,9 @@
 import logging
 from pathlib import Path
 
+from eclipse_cli.cli import DEFAULT_CONFIG_PATH
 from eclipse_cli.config import load_settings
 from eclipse_cli.logging import configure_logging, get_logger, parse_log_level
-from eclipse_cli.main import CONFIG_PATH
 
 
 def test_get_logger_returns_named_logger() -> None:
@@ -59,7 +59,7 @@ def test_parse_log_level_returns_logging_constant() -> None:
 
 def test_default_configuration_uses_valid_log_level() -> None:
     """Verify that the default YAML contains a supported log level."""
-    settings = load_settings(CONFIG_PATH)
+    settings = load_settings(DEFAULT_CONFIG_PATH)
 
     assert settings.logging.level in {
         "DEBUG",

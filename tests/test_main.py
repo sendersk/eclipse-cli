@@ -1,45 +1,41 @@
 """Tests for the application entry point."""
 
-import logging
 import subprocess
 import sys
 from pathlib import Path
 
-import eclipse_cli.main as application
-from eclipse_cli.main import main
+from typer.testing import CliRunner
+
+from eclipse_cli.cli import (
+    CONFIGURATION_ERROR_EXIT_CODE,
+    app,
+    initialize_application,
+)
+
+runner = CliRunner()
 
 
-def test_main_runs_without_error(caplog) -> None:
-    """Verify that the application logs its startup message."""
-    with caplog.at_level(logging.INFO):
-        main()
-
-    assert "Eclipse CLI application started" in caplog.text
-
-
-def test_main_logs_application_start(caplog) -> None:
-    """Verify that the application logs its startup message."""
-    with caplog.at_level(logging.INFO):
-        exit_code = main()
+def test_initialize_application_returns_zero() -> None:
+    """Verify that application initialization succeeds."""
+    exit_code = initialize_application(
+        Path("config/settings.yaml"),
+    )
 
     assert exit_code == 0
-    assert "Eclipse CLI application started in development environment" in (caplog.text)
 
 
-def test_main_returns_configuration_error_code(
-    monkeypatch,
+def test_initialize_application_returns_configuration_error(
     tmp_path: Path,
 ) -> None:
     """Verify that configuration errors return the expected exit code."""
-    missing_config = tmp_path / "missing.yaml"
+    config_path = tmp_path / "missing.yaml"
 
-    monkeypatch.setattr(application, "CONFIG_PATH", missing_config)
+    exit_code = initialize_application(config_path)
 
-    assert application.main() == 2
+    assert exit_code == CONFIGURATION_ERROR_EXIT_CODE
 
 
-def test_main_returns_configuration_error_for_invalid_yaml(
-    monkeypatch,
+def test_initialize_application_returns_error_for_invalid_yaml(
     tmp_path: Path,
 ) -> None:
     """Verify that invalid YAML returns the configuration error code."""
@@ -49,13 +45,12 @@ def test_main_returns_configuration_error_for_invalid_yaml(
         encoding="utf-8",
     )
 
-    monkeypatch.setattr(application, "CONFIG_PATH", config_file)
+    exit_code = initialize_application(config_file)
 
-    assert application.main() == 2
+    assert exit_code == CONFIGURATION_ERROR_EXIT_CODE
 
 
-def test_main_returns_configuration_error_for_invalid_settings(
-    monkeypatch,
+def test_initialize_application_returns_error_for_invalid_settings(
     tmp_path: Path,
 ) -> None:
     """Verify that invalid settings return the configuration error code."""
@@ -73,13 +68,13 @@ logging:
         encoding="utf-8",
     )
 
-    monkeypatch.setattr(application, "CONFIG_PATH", config_file)
+    exit_code = initialize_application(config_file)
 
-    assert application.main() == 2
+    assert exit_code == CONFIGURATION_ERROR_EXIT_CODE
 
 
-def test_application_exits_with_zero_for_valid_configuration() -> None:
-    """Verify that the application process exits successfully."""
+def test_application_shows_help_without_command() -> None:
+    """Verify that the application shows help when no command is provided."""
     result = subprocess.run(
         [sys.executable, "-m", "eclipse_cli.main"],
         capture_output=True,
@@ -87,4 +82,21 @@ def test_application_exits_with_zero_for_valid_configuration() -> None:
         check=False,
     )
 
-    assert result.returncode == 0
+    assert result.returncode == 2
+    assert "Calculate and display solar eclipse information" in result.stdout
+
+
+def test_cli_help() -> None:
+    """Verify that the CLI exposes help information."""
+    result = runner.invoke(app, ["--help"])
+
+    assert result.exit_code == 0
+    assert "Calculate and display solar eclipse information" in result.stdout
+
+
+def test_eclipse_command() -> None:
+    """Verify that the eclipse command is available."""
+    result = runner.invoke(app, ["eclipse"])
+
+    assert result.exit_code == 0
+    assert "Eclipse calculation is not implemented yet." in result.stdout
