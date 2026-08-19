@@ -36,10 +36,19 @@ def test_cli_version() -> None:
 
 def test_eclipse_command() -> None:
     """Verify that the eclipse command is available."""
-    result = runner.invoke(app, ["eclipse"])
+    result = runner.invoke(
+        app,
+        [
+            "eclipse",
+            "--latitude",
+            "52.5200",
+            "--longitude",
+            "13.4050",
+        ],
+    )
 
     assert result.exit_code == 0
-    assert "Eclipse calculation is not implemented yet." in result.stdout
+    assert "Location: 52.52, 13.405" in result.stdout
 
 
 def test_cli_version_as_process() -> None:
@@ -104,11 +113,19 @@ logging:
 
     result = runner.invoke(
         app,
-        ["--config", str(config_path), "eclipse"],
+        [
+            "--config",
+            str(config_path),
+            "eclipse",
+            "--latitude",
+            "52.5200",
+            "--longitude",
+            "13.4050",
+        ],
     )
 
     assert result.exit_code == 0
-    assert "Eclipse calculation is not implemented yet." in result.stdout
+    assert "Location: 52.52, 13.405" in result.stdout
 
 
 def test_cli_rejects_missing_config() -> None:
@@ -148,11 +165,19 @@ logging:
 
     result = runner.invoke(
         app,
-        ["-c", str(config_path), "eclipse"],
+        [
+            "-c",
+            str(config_path),
+            "eclipse",
+            "--latitude",
+            "52.5200",
+            "--longitude",
+            "13.4050",
+        ],
     )
 
     assert result.exit_code == 0
-    assert "Eclipse calculation is not implemented yet." in result.stdout
+    assert "Location: 52.52, 13.405" in result.stdout
 
 
 def test_cli_version_ignores_config_path() -> None:
@@ -168,3 +193,65 @@ def test_cli_version_ignores_config_path() -> None:
 
     assert result.exit_code == 0
     assert result.stdout.strip() == get_version()
+
+
+def test_eclipse_command_accepts_location() -> None:
+    """Verify that the eclipse command accepts geographic coordinates."""
+    result = runner.invoke(
+        app,
+        [
+            "eclipse",
+            "--latitude",
+            "52.5200",
+            "--longitude",
+            "13.4050",
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert "Location: 52.52, 13.405" in result.stdout
+
+
+def test_eclipse_command_rejects_invalid_latitude() -> None:
+    """Verify that invalid latitude is rejected."""
+    result = runner.invoke(
+        app,
+        [
+            "eclipse",
+            "--latitude",
+            "91",
+            "--longitude",
+            "13.405",
+        ],
+    )
+
+    assert result.exit_code == 2
+    assert "Invalid location:" in result.output
+
+
+def test_eclipse_command_rejects_invalid_longitude() -> None:
+    """Verify that invalid longitude is rejected."""
+    result = runner.invoke(
+        app,
+        [
+            "eclipse",
+            "--latitude",
+            "52.520",
+            "--longitude",
+            "181",
+        ],
+    )
+
+    assert result.exit_code == 2
+    assert "Invalid location:" in result.output
+
+
+def test_eclipse_command_requires_location() -> None:
+    """Verify that the eclipse command requires coordinates."""
+    result = runner.invoke(
+        app,
+        ["eclipse"],
+    )
+
+    assert result.exit_code == 2
+    assert "Missing option" in result.output

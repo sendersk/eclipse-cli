@@ -96,7 +96,16 @@ def test_cli_help() -> None:
 
 def test_eclipse_command() -> None:
     """Verify that the eclipse command is available."""
-    result = runner.invoke(app, ["eclipse"])
+    result = runner.invoke(
+        app,
+        [
+            "eclipse",
+            "--latitude",
+            "52.5200",
+            "--longitude",
+            "13.4050",
+        ],
+    )
 
     assert result.exit_code == 0
-    assert "Eclipse calculation is not implemented yet." in result.stdout
+    assert "Location: 52.52, 13.405" in result.stdout

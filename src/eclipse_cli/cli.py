@@ -9,6 +9,8 @@ from typer import Context
 
 from eclipse_cli.config import ConfigurationError, load_settings
 from eclipse_cli.logging import configure_logging, get_logger, parse_log_level
+from eclipse_cli.models.exceptions import InvalidLocationError
+from eclipse_cli.services.location import LocationService
 
 logger = get_logger(__name__)
 
@@ -93,6 +95,36 @@ def cli_callback(
 
 
 @app.command()
-def eclipse() -> None:
-    """Calculate solar eclipse information for a location."""
-    typer.echo("Eclipse calculation is not implemented yet.")
+def eclipse(
+    latitude: Annotated[
+        float,
+        typer.Option(
+            ...,
+            "--latitude",
+            help="Observer latitude in decimal degrees.",
+        ),
+    ],
+    longitude: Annotated[
+        float,
+        typer.Option(
+            ...,
+            "--longitude",
+            help="Observer longitude in decimal degrees.",
+        ),
+    ],
+) -> None:
+    """Calculate the solar eclipse for a geographic location."""
+    location_service = LocationService()
+
+    try:
+        location = location_service.create_location(
+            latitude=latitude,
+            longitude=longitude,
+        )
+    except InvalidLocationError as error:
+        typer.echo(f"Invalid location: {error}", err=True)
+        raise typer.Exit(code=2) from error
+
+    typer.echo(
+        f"Location: {location.latitude}, {location.longitude}",
+    )
