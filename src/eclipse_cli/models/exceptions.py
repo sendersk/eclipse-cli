@@ -1,0 +1,5 @@
+"""Exceptions raised by domain models."""
+
+
+class InvalidLocationError(ValueError):
+    """Raised when geographic coordinates are outside valid ranges."""
