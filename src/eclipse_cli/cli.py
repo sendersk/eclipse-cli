@@ -2,6 +2,7 @@
 
 from importlib.metadata import version
 from pathlib import Path
+from typing import Annotated
 
 import typer
 from typer import Context
@@ -59,12 +60,22 @@ def initialize_application(config_path: Path) -> int:
 @app.callback()
 def cli_callback(
     ctx: Context,
-    version_option: bool = typer.Option(
-        False,
-        "--version",
-        help="Show application version and exit.",
-        is_eager=True,
-    ),
+    version_option: Annotated[
+        bool,
+        typer.Option(
+            "--version",
+            help="Show application version and exit.",
+            is_eager=True,
+        ),
+    ] = False,
+    config_path: Annotated[
+        Path,
+        typer.Option(
+            "--config",
+            "-c",
+            help="Path to the YAML configuration file.",
+        ),
+    ] = DEFAULT_CONFIG_PATH,
 ) -> None:
     """Initialize the Eclipse CLI application."""
     if version_option:
@@ -75,7 +86,7 @@ def cli_callback(
         typer.echo(ctx.get_help())
         raise typer.Exit(code=2)
 
-    exit_code = initialize_application(DEFAULT_CONFIG_PATH)
+    exit_code = initialize_application(config_path)
 
     if exit_code != 0:
         raise typer.Exit(code=exit_code)

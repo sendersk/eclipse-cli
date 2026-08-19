@@ -2,6 +2,7 @@
 
 import subprocess
 import sys
+from pathlib import Path
 
 from typer.testing import CliRunner
 
@@ -79,3 +80,91 @@ def test_cli_without_command_shows_help() -> None:
 
     assert result.exit_code == 2
     assert "Calculate and display solar eclipse information" in result.stdout
+
+
+def test_cli_accepts_custom_config(
+    tmp_path: Path,
+) -> None:
+    """Verify that the CLI accepts a custom configuration path."""
+    log_file = tmp_path / "eclipse-cli.log"
+    config_path = tmp_path / "settings.yaml"
+
+    config_path.write_text(
+        f"""
+application:
+  name: eclipse-cli
+  environment: development
+
+logging:
+  level: INFO
+  file: {log_file.as_posix()}
+""",
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(
+        app,
+        ["--config", str(config_path), "eclipse"],
+    )
+
+    assert result.exit_code == 0
+    assert "Eclipse calculation is not implemented yet." in result.stdout
+
+
+def test_cli_rejects_missing_config() -> None:
+    """Verify that the CLI rejects a missing configuration file."""
+    result = runner.invoke(
+        app,
+        [
+            "--config",
+            "does-not-exist.yaml",
+            "eclipse",
+        ],
+    )
+
+    assert result.exit_code != 0
+    assert "does-not-exist.yaml" in result.output
+
+
+def test_cli_accepts_short_config_option(
+    tmp_path: Path,
+) -> None:
+    """Verify that the CLI accepts the short config option."""
+    log_file = tmp_path / "eclipse-cli.log"
+    config_path = tmp_path / "settings.yaml"
+
+    config_path.write_text(
+        f"""
+application:
+  name: eclipse-cli
+  environment: development
+
+logging:
+  level: INFO
+  file: {log_file.as_posix()}
+""",
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(
+        app,
+        ["-c", str(config_path), "eclipse"],
+    )
+
+    assert result.exit_code == 0
+    assert "Eclipse calculation is not implemented yet." in result.stdout
+
+
+def test_cli_version_ignores_config_path() -> None:
+    """Verify that version output does not require configuration."""
+    result = runner.invoke(
+        app,
+        [
+            "--version",
+            "--config",
+            "does-not-exist.yaml",
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert result.stdout.strip() == get_version()
