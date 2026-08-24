@@ -99,7 +99,7 @@ def test_cli_accepts_custom_config(
     config_path = tmp_path / "settings.yaml"
 
     config_path.write_text(
-    f"""
+        f"""
 application:
   name: eclipse-cli
   environment: development
