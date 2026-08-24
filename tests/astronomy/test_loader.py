@@ -79,3 +79,30 @@ def test_loader_wraps_loading_errors(
 
     with pytest.raises(EphemerisError, match="Unable to load ephemeris file"):
         loader.load(path)
+
+
+def test_loader_preserves_original_loading_error(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Verify that the original loading error is preserved as the cause."""
+    path = tmp_path / "de440.bsp"
+    path.touch()
+
+    original_error = RuntimeError("Unable to parse kernel")
+
+    def fake_load_file(path: Path) -> SpiceKernel:
+        """Raise the original loading error."""
+        raise original_error
+
+    monkeypatch.setattr(
+        "eclipse_cli.astronomy.loader.load_file",
+        fake_load_file,
+    )
+
+    loader = EphemerisLoader()
+
+    with pytest.raises(EphemerisError) as exc_info:
+        loader.load(path)
+
+    assert exc_info.value.__cause__ is original_error
