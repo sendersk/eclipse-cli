@@ -15,3 +15,5 @@ def test_calculate_accepts_location() -> None:
     result = service.calculate(location)
 
     assert result is None
+    assert location.latitude == 52.5200
+    assert location.longitude == 13.4050
