@@ -97,3 +97,6 @@ Desktop.ini
 # =========================
 
 .local/
+
+# Astronomy ephemeris data
+data/ephemeris/
