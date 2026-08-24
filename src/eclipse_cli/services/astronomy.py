@@ -1,5 +1,6 @@
 """Services for astronomical calculations."""
 
+from pathlib import Path
 from typing import Any
 
 from skyfield.api import Loader
@@ -8,7 +9,7 @@ from skyfield.api import Loader
 class AstronomyService:
     """Provide access to astronomical ephemeris data."""
 
-    def __init__(self, data_directory: str) -> None:
+    def __init__(self, data_directory: Path) -> None:
         """Initialize the astronomy service."""
         self._loader = Loader(data_directory)
 
