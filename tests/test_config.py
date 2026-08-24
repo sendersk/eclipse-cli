@@ -22,6 +22,10 @@ def test_settings_accept_valid_configuration() -> None:
             "level": "INFO",
             "file": "logs/eclipse-cli.log",
         },
+        astronomy={
+            "data_directory": "data/ephemeris",
+            "ephemeris": "de440.bsp",
+        },
     )
 
     assert settings.application.name == "eclipse-cli"
@@ -42,6 +46,10 @@ def test_settings_reject_unknown_fields() -> None:
             logging={
                 "level": "INFO",
             },
+            astronomy={
+                "data_directory": "data/ephemeris",
+                "ephemeris": "de440.bsp",
+            },
         )
 
 
@@ -55,6 +63,10 @@ def test_logging_file_can_be_disabled() -> None:
         logging={
             "level": "INFO",
             "file": None,
+        },
+        astronomy={
+            "data_directory": "data/ephemeris",
+            "ephemeris": "de440.bsp",
         },
     )
 
@@ -72,7 +84,11 @@ application:
         
 logging:
     level: DEBUG
-    file: logs/test.log        
+    file: logs/test.log     
+    
+astronomy:
+    data_directory: data/ephemeris
+    ephemeris: de440.bsp   
 """,
         encoding="utf-8",
     )
@@ -125,6 +141,10 @@ def test_settings_reject_invalid_log_level() -> None:
             logging={
                 "level": "INVALID",
             },
+            astronomy={
+                "data_directory": "data/ephemeris",
+                "ephemeris": "de440.bsp",
+            },
         )
 
 
@@ -142,6 +162,10 @@ def test_settings_accept_supported_log_levels(level: str) -> None:
         logging={
             "level": level,
         },
+        astronomy={
+            "data_directory": "data/ephemeris",
+            "ephemeris": "de440.bsp",
+        },
     )
 
     assert settings.logging.level == level
@@ -155,6 +179,10 @@ def test_logging_settings_use_defaults() -> None:
             "environment": "test",
         },
         logging={},
+        astronomy={
+            "data_directory": "data/ephemeris",
+            "ephemeris": "de440.bsp",
+        },
     )
 
     assert settings.logging.level == "INFO"
@@ -194,4 +222,46 @@ def test_settings_reject_unknown_root_fields() -> None:
                 "level": "INFO",
             },
             unknown="value",
+            astronomy={
+                "data_directory": "data/ephemeris",
+                "ephemeris": "de440.bsp",
+            },
         )
+
+
+def test_load_settings_includes_astronomy_configuration() -> None:
+    """Verify that astronomy configuration is loaded correctly."""
+    settings = load_settings(Path("config/settings.yaml"))
+
+    assert settings.astronomy.data_directory == Path("data/ephemeris")
+    assert settings.astronomy.ephemeris == "de440.bsp"
+
+
+def test_load_settings_rejects_missing_astronomy_configuration(
+    tmp_path: Path,
+) -> None:
+    """Verify that missing astronomy configuration is rejected."""
+    config_file = tmp_path / "settings.yaml"
+
+    config_file.write_text(
+        """
+application:
+  name: eclipse-cli
+  environment: development
+
+logging:
+  level: INFO
+  file: logs/eclipse-cli.log
+""",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ConfigurationError):
+        load_settings(config_file)
+
+
+def test_astronomy_data_directory_is_path() -> None:
+    """Verify that the astronomy data directory uses pathlib."""
+    settings = load_settings(Path("config/settings.yaml"))
+
+    assert isinstance(settings.astronomy.data_directory, Path)
