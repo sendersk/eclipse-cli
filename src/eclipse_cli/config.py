@@ -31,8 +31,10 @@ class LoggingSettings(BaseModel):
 class AstronomySettings(BaseModel):
     """Configuration for astronomical calculations."""
 
+    model_config = ConfigDict(extra="forbid")
+
     data_directory: Path
-    ephemeris: str
+    ephemeris: str = Field(min_length=1)
 
 
 class Settings(BaseModel):

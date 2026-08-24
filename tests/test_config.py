@@ -5,7 +5,12 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from eclipse_cli.config import ConfigurationError, Settings, load_settings
+from eclipse_cli.config import (
+    AstronomySettings,
+    ConfigurationError,
+    Settings,
+    load_settings,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 CONFIG_PATH = PROJECT_ROOT / "config" / "settings.yaml"
@@ -265,3 +270,14 @@ def test_astronomy_data_directory_is_path() -> None:
     settings = load_settings(Path("config/settings.yaml"))
 
     assert isinstance(settings.astronomy.data_directory, Path)
+
+
+def test_astronomy_settings_accept_valid_configuration() -> None:
+    """Verify that valid astronomy configuration is accepted."""
+    settings = AstronomySettings(
+        data_directory=Path("data/ephemeris"),
+        ephemeris="de440.bsp",
+    )
+
+    assert settings.data_directory == Path("data/ephemeris")
+    assert settings.ephemeris == "de440.bsp"
