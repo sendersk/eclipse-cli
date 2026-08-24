@@ -28,6 +28,13 @@ class LoggingSettings(BaseModel):
     file: Path | None = Path("logs/eclipse-cli.log")
 
 
+class AstronomySettings(BaseModel):
+    """Configuration for astronomical calculations."""
+
+    data_directory: Path
+    ephemeris: str
+
+
 class Settings(BaseModel):
     """Root application configuration."""
 
@@ -35,6 +42,7 @@ class Settings(BaseModel):
 
     application: ApplicationSettings
     logging: LoggingSettings
+    astronomy: AstronomySettings
 
 
 class ConfigurationError(Exception):

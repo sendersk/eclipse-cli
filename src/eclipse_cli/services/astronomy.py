@@ -1,7 +1,8 @@
 """Services for astronomical calculations."""
 
-from skyfield.api import Loader
 from typing import Any
+
+from skyfield.api import Loader
 
 
 class AstronomyService:

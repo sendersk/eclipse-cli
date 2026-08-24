@@ -5,3 +5,7 @@ application:
 logging:
   level: INFO
   file: logs/eclipse-cli.log
+
+astronomy:
+  data_directory: data/ephemeris
+  ephemeris: de440.bsp
