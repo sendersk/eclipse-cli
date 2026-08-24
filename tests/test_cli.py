@@ -3,6 +3,7 @@
 import subprocess
 import sys
 from pathlib import Path
+from unittest.mock import patch
 
 from typer.testing import CliRunner
 
@@ -209,7 +210,7 @@ def test_eclipse_command_accepts_location() -> None:
     )
 
     assert result.exit_code == 0
-    assert "Location: 52.52, 13.405" in result.stdout
+    assert result.output == ""
 
 
 def test_eclipse_command_rejects_invalid_latitude() -> None:
@@ -255,3 +256,26 @@ def test_eclipse_command_requires_location() -> None:
 
     assert result.exit_code == 2
     assert "Missing option" in result.output
+
+
+def test_eclipse_command_passes_location_to_service() -> None:
+    """Verify that the eclipse command passes location to the eclipse service."""
+    with patch("eclipse_cli.cli.EclipseService.calculate") as calculate:
+        result = runner.invoke(
+            app,
+            [
+                "eclipse",
+                "--latitude",
+                "52.5200",
+                "--longitude",
+                "13.4050",
+            ],
+        )
+
+    assert result.exit_code == 0
+    calculate.assert_called_once()
+
+    location = calculate.call_args.args[0]
+
+    assert location.latitude == 52.5200
+    assert location.longitude == 13.4050
