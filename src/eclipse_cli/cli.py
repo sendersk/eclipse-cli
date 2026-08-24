@@ -128,7 +128,3 @@ def eclipse(
         raise typer.Exit(code=2) from error
 
     eclipse_service.calculate(location)
-
-    typer.echo(
-        f"Location: {location.latitude}, {location.longitude}",
-    )

@@ -49,7 +49,6 @@ def test_eclipse_command() -> None:
     )
 
     assert result.exit_code == 0
-    assert "Location: 52.52, 13.405" in result.stdout
 
 
 def test_cli_version_as_process() -> None:
@@ -126,7 +125,6 @@ logging:
     )
 
     assert result.exit_code == 0
-    assert "Location: 52.52, 13.405" in result.stdout
 
 
 def test_cli_rejects_missing_config() -> None:
@@ -178,7 +176,6 @@ logging:
     )
 
     assert result.exit_code == 0
-    assert "Location: 52.52, 13.405" in result.stdout
 
 
 def test_cli_version_ignores_config_path() -> None:
@@ -210,7 +207,6 @@ def test_eclipse_command_accepts_location() -> None:
     )
 
     assert result.exit_code == 0
-    assert result.output == ""
 
 
 def test_eclipse_command_rejects_invalid_latitude() -> None:

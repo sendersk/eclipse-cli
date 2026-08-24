@@ -108,4 +108,3 @@ def test_eclipse_command() -> None:
     )
 
     assert result.exit_code == 0
-    assert "Location: 52.52, 13.405" in result.stdout
