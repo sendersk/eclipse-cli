@@ -1,14 +1,88 @@
 """Tests for astronomical calculations."""
 
+from datetime import UTC, datetime
 from unittest.mock import MagicMock
 
+import pytest
+
 from eclipse_cli.astronomy.calculator import AstronomyCalculator
+from eclipse_cli.astronomy.models import EphemerisData
+
+
+def create_calculator() -> tuple[AstronomyCalculator, MagicMock]:
+    """Create a calculator with a mocked ephemeris."""
+    kernel = MagicMock()
+    ephemeris = EphemerisData(
+        path=MagicMock(),
+        kernel=kernel,
+    )
+
+    return AstronomyCalculator(ephemeris), kernel
 
 
 def test_astronomy_calculator_initializes() -> None:
     """Verify that the astronomy calculator initializes."""
-    ephemeris = MagicMock()
-
-    calculator = AstronomyCalculator(ephemeris)
+    calculator, _ = create_calculator()
 
     assert calculator is not None
+
+
+def test_get_sun_position_requires_timezone_aware_datetime() -> None:
+    """Verify that a timezone-naive datetime is rejected."""
+    calculator, _ = create_calculator()
+
+    timestamp = datetime(2026, 8, 25, 12, 0)
+
+    with pytest.raises(
+        ValueError,
+        match="Timestamp must be timezone-aware",
+    ):
+        calculator.get_sun_position(timestamp)
+
+
+def test_get_sun_position_returns_coordinates() -> None:
+    """Verify that the Sun position is returned in degrees."""
+    calculator, kernel = create_calculator()
+
+    timescale = MagicMock()
+    time = MagicMock()
+
+    right_ascension = MagicMock()
+    right_ascension.hours = 10.0
+
+    declination = MagicMock()
+    declination.degrees = 20.0
+
+    apparent = MagicMock()
+    apparent.radec.return_value = (
+        right_ascension,
+        declination,
+        MagicMock(),
+    )
+
+    kernel.timescale.return_value = timescale
+    timescale.from_datetime.return_value = time
+
+    earth = MagicMock()
+    sun = MagicMock()
+
+    kernel.__getitem__.side_effect = {
+        "earth": earth,
+        "sun": sun,
+    }.__getitem__
+
+    earth.at.return_value.observe.return_value.apparent.return_value = apparent
+
+    timestamp = datetime(
+        2026,
+        8,
+        25,
+        12,
+        0,
+        tzinfo=UTC,
+    )
+
+    result = calculator.get_sun_position(timestamp)
+
+    assert result == (150.0, 20.0)
+    timescale.from_datetime.assert_called_once_with(timestamp)
