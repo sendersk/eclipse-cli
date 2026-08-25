@@ -1,10 +1,10 @@
 """Services for astronomical calculations."""
 
-from typing import Any
-
 from skyfield.api import Loader
+from skyfield.jpllib import SpiceKernel
 
 from eclipse_cli.config import AstronomySettings
+from eclipse_cli.models.exceptions import EphemerisError
 
 
 class AstronomyService:
@@ -15,6 +15,19 @@ class AstronomyService:
         self._settings = settings
         self._loader = Loader(settings.data_directory)
 
-    def load_ephemeris(self) -> Any:
-        """Load the configured astronomical ephemeris file."""
-        return self._loader(self._settings.ephemeris)
+    def load_ephemeris(self) -> SpiceKernel:
+        """
+        Load the configured astronomical ephemeris.
+
+        Returns:
+            Loaded Skyfield ephemeris.
+
+        Raises:
+            EphemerisError: If the ephemeris cannot be loaded.
+        """
+        try:
+            return self._loader(self._settings.ephemeris)
+        except (OSError, ValueError) as error:
+            raise EphemerisError(
+                f"Unable to load ephemeris: {self._settings.ephemeris}"
+            ) from error
