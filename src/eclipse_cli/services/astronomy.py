@@ -18,6 +18,7 @@ class AstronomyService:
         """Initialize the astronomy service."""
         self._settings = settings
         self._loader = loader or EphemerisLoader()
+        self._ephemeris: EphemerisData | None = None
 
     def load_ephemeris(self) -> EphemerisData:
         """Load the configured astronomical ephemeris.
@@ -26,4 +27,21 @@ class AstronomyService:
             Loaded ephemeris data.
         """
         path = Path(self._settings.data_directory) / self._settings.ephemeris
-        return self._loader.load(path)
+
+        self._ephemeris = self._loader.load(path)
+
+        return self._ephemeris
+
+    def get_ephemeris(self) -> EphemerisData:
+        """Return the loaded astronomical ephemeris.
+
+        Returns:
+            Loaded ephemeris data.
+
+        Raises:
+            RuntimeError: If the ephemeris has not been loaded yet.
+        """
+        if self._ephemeris is None:
+            raise RuntimeError("Ephemeris has not been loaded.")
+
+        return self._ephemeris

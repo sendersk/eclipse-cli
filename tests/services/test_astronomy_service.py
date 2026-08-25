@@ -3,6 +3,8 @@
 from pathlib import Path
 from unittest.mock import MagicMock
 
+import pytest
+
 from eclipse_cli.astronomy.loader import EphemerisLoader
 from eclipse_cli.astronomy.models import EphemerisData
 from eclipse_cli.config import AstronomySettings
@@ -48,3 +50,41 @@ def test_astronomy_service_loads_configured_ephemeris(
     loader.load.assert_called_once_with(
         tmp_path / "de440.bsp",
     )
+
+
+def test_get_ephemeris_returns_loaded_data(
+    tmp_path: Path,
+) -> None:
+    """Verify that loaded ephemeris data can be retrieved."""
+    settings = create_settings(tmp_path)
+
+    expected_data = MagicMock(spec=EphemerisData)
+
+    loader = MagicMock(spec=EphemerisLoader)
+    loader.load.return_value = expected_data
+
+    service = AstronomyService(
+        settings,
+        loader=loader,
+    )
+
+    service.load_ephemeris()
+
+    result = service.get_ephemeris()
+
+    assert result is expected_data
+
+
+def test_get_ephemeris_rejects_unloaded_service(
+    tmp_path: Path,
+) -> None:
+    """Verify that ephemeris cannot be retrieved before loading."""
+    settings = create_settings(tmp_path)
+
+    service = AstronomyService(settings)
+
+    with pytest.raises(
+        RuntimeError,
+        match="Ephemeris has not been loaded",
+    ):
+        service.get_ephemeris()
