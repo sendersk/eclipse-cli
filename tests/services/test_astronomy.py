@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from eclipse_cli.config import AstronomySettings
-from eclipse_cli.models.exceptions import EphemerisError
+from eclipse_cli.astronomy.exceptions import EphemerisError
 from eclipse_cli.services.astronomy import AstronomyService
 
 
