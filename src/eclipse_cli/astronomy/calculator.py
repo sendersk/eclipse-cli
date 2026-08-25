@@ -28,8 +28,7 @@ class AstronomyCalculator:
         Raises:
             ValueError: If the timestamp is not timezone-aware.
         """
-        if timestamp.tzinfo is None:
-            raise ValueError("Timestamp must be timezone-aware.")
+        self._validate_timestamp(timestamp)
 
         utc_timestamp = timestamp.astimezone(UTC)
 
@@ -46,3 +45,9 @@ class AstronomyCalculator:
             right_ascension.hours * 15.0,
             declination.degrees,
         )
+
+    @staticmethod
+    def _validate_timestamp(timestamp: datetime) -> None:
+        """Validate an astronomical calculation timestamp."""
+        if timestamp.tzinfo is None:
+            raise ValueError("Timestamp must be timezone-aware.")

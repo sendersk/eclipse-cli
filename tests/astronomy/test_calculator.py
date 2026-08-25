@@ -86,3 +86,28 @@ def test_get_sun_position_returns_coordinates() -> None:
 
     assert result == (150.0, 20.0)
     timescale.from_datetime.assert_called_once_with(timestamp)
+
+
+def test_validate_timestamp_accepts_timezone_aware_datetime() -> None:
+    """Verify that timezone-aware datetimes are accepted."""
+    timestamp = datetime(
+        2026,
+        8,
+        25,
+        12,
+        0,
+        tzinfo=UTC,
+    )
+
+    AstronomyCalculator._validate_timestamp(timestamp)
+
+
+def test_validate_timestamp_rejects_timezone_naive_datetime() -> None:
+    """Verify that timezone-naive datetimes are rejected."""
+    timestamp = datetime(2026, 8, 25, 12, 0)
+
+    with pytest.raises(
+        ValueError,
+        match="Timestamp must be timezone-aware",
+    ):
+        AstronomyCalculator._validate_timestamp(timestamp)
