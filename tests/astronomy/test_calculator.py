@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from eclipse_cli.astronomy.calculator import AstronomyCalculator
-from eclipse_cli.astronomy.models import EphemerisData
+from eclipse_cli.astronomy.models import EphemerisData, CelestialPosition
 
 
 def create_calculator() -> tuple[AstronomyCalculator, MagicMock]:
@@ -84,7 +84,10 @@ def test_get_sun_position_returns_coordinates() -> None:
 
     result = calculator.get_sun_position(timestamp)
 
-    assert result == (150.0, 20.0)
+    assert result == CelestialPosition(
+        right_ascension=150.0,
+        declination=20.0,
+    )
     timescale.from_datetime.assert_called_once_with(timestamp)
 
 

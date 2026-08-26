@@ -2,7 +2,7 @@
 
 from datetime import UTC, datetime
 
-from eclipse_cli.astronomy.models import EphemerisData
+from eclipse_cli.astronomy.models import EphemerisData, CelestialPosition
 
 
 class AstronomyCalculator:
@@ -13,9 +13,9 @@ class AstronomyCalculator:
         self._ephemeris = ephemeris
 
     def get_sun_position(
-        self,
-        timestamp: datetime,
-    ) -> tuple[float, float]:
+            self,
+            timestamp: datetime,
+    ) -> CelestialPosition:
         """
         Calculate the apparent position of the Sun.
 
@@ -23,7 +23,7 @@ class AstronomyCalculator:
             timestamp: UTC datetime for the calculation.
 
         Returns:
-            Tuple containing right ascension and declination in degrees.
+            Apparent Sun position as celestial coordinates.
 
         Raises:
             ValueError: If the timestamp is not timezone-aware.
@@ -41,9 +41,9 @@ class AstronomyCalculator:
         apparent = earth.at(time).observe(sun).apparent()
         right_ascension, declination, _ = apparent.radec()
 
-        return (
-            right_ascension.hours * 15.0,
-            declination.degrees,
+        return CelestialPosition(
+            right_ascension=right_ascension.hours * 15.0,
+            declination=declination.degrees,
         )
 
     @staticmethod
