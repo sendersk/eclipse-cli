@@ -6,6 +6,7 @@ import pytest
 from skyfield.jpllib import SpiceKernel
 
 from eclipse_cli.astronomy.models import EphemerisData
+from eclipse_cli.astronomy.models import CelestialPosition
 
 
 def test_ephemeris_data_stores_path_and_kernel() -> None:
@@ -33,3 +34,14 @@ def test_ephemeris_data_is_immutable() -> None:
 
     with pytest.raises(AttributeError):
         data.path = Path("other.bsp")
+
+
+def test_celestial_position_stores_coordinates() -> None:
+    """Verify that celestial coordinates are stored correctly."""
+    position = CelestialPosition(
+        right_ascension=150.0,
+        declination=20.0,
+    )
+
+    assert position.right_ascension == 150.0
+    assert position.declination == 20.0

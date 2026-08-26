@@ -12,3 +12,11 @@ class EphemerisData:
 
     path: Path
     kernel: SpiceKernel
+
+
+@dataclass(frozen=True, slots=True)
+class CelestialPosition:
+    """Represent the apparent position of a celestial body."""
+
+    right_ascension: float
+    declination: float
