@@ -165,3 +165,56 @@ def test_get_moon_position_returns_coordinates() -> None:
         declination=-10.0,
     )
     timescale.from_datetime.assert_called_once_with(timestamp)
+
+
+def test_calculate_angular_separation_for_same_position() -> None:
+    """Verify that identical positions have zero angular separation."""
+    position = CelestialPosition(
+        right_ascension=150.0,
+        declination=20.0,
+    )
+
+    result = AstronomyCalculator.calculate_angular_separation(
+        position,
+        position,
+    )
+
+    assert result == pytest.approx(0.0)
+
+
+def test_calculate_angular_separation_for_known_positions() -> None:
+    """Verify angular separation for two known positions."""
+    first = CelestialPosition(
+        right_ascension=0.0,
+        declination=0.0,
+    )
+    second = CelestialPosition(
+        right_ascension=90.0,
+        declination=0.0,
+    )
+
+    result = AstronomyCalculator.calculate_angular_separation(
+        first,
+        second,
+    )
+
+    assert result == pytest.approx(90.0)
+
+
+def test_calculate_angular_separation_uses_declination() -> None:
+    """Verify that declination affects angular separation."""
+    first = CelestialPosition(
+        right_ascension=0.0,
+        declination=0.0,
+    )
+    second = CelestialPosition(
+        right_ascension=0.0,
+        declination=30.0,
+    )
+
+    result = AstronomyCalculator.calculate_angular_separation(
+        first,
+        second,
+    )
+
+    assert result == pytest.approx(30.0)

@@ -1,6 +1,7 @@
 """Astronomical calculation utilities."""
 
 from datetime import UTC, datetime
+from math import acos, cos, degrees, radians, sin
 
 from eclipse_cli.astronomy.models import EphemerisData, CelestialPosition
 
@@ -85,3 +86,36 @@ class AstronomyCalculator:
             right_ascension=right_ascension.hours * 15.0,
             declination=declination.degrees,
         )
+
+    @staticmethod
+    def calculate_angular_separation(
+            first: CelestialPosition,
+            second: CelestialPosition,
+    ) -> float:
+        """
+        Calculate the angular separation between two celestial positions.
+
+        Args:
+            first: First celestial position.
+            second: Second celestial position.
+
+        Returns:
+            Angular separation in degrees.
+        """
+        first_ra = radians(first.right_ascension)
+        second_ra = radians(second.right_ascension)
+
+        first_dec = radians(first.declination)
+        second_dec = radians(second.declination)
+
+        cosine = (
+                sin(first_dec) * sin(second_dec)
+                + cos(first_dec)
+                * cos(second_dec)
+                * cos(first_ra - second_ra)
+        )
+
+        # Protect against floating-point rounding outside [-1, 1].
+        cosine = max(-1.0, min(1.0, cosine))
+
+        return degrees(acos(cosine))
