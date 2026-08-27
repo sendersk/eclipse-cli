@@ -3,7 +3,7 @@
 from datetime import UTC, datetime
 from math import acos, cos, degrees, radians, sin
 
-from eclipse_cli.astronomy.models import EphemerisData, CelestialPosition
+from eclipse_cli.astronomy.models import CelestialPosition, EphemerisData
 
 
 class AstronomyCalculator:

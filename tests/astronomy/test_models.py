@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from skyfield.jpllib import SpiceKernel
 
-from eclipse_cli.astronomy.models import EphemerisData, CelestialPosition
+from eclipse_cli.astronomy.models import CelestialPosition, EphemerisData
 
 
 def test_ephemeris_data_stores_path_and_kernel() -> None:

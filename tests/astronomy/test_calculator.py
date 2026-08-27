@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from eclipse_cli.astronomy.calculator import AstronomyCalculator
-from eclipse_cli.astronomy.models import EphemerisData, CelestialPosition
+from eclipse_cli.astronomy.models import CelestialPosition, EphemerisData
 
 
 def create_calculator() -> tuple[AstronomyCalculator, MagicMock]:
