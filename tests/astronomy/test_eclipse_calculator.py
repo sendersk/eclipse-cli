@@ -1,5 +1,6 @@
 """Tests for eclipse calculations."""
 
+from datetime import UTC, datetime
 from unittest.mock import MagicMock
 
 import pytest
@@ -46,3 +47,38 @@ def test_calculate_separation_delegates_to_astronomy_calculator() -> None:
         sun_position,
         moon_position,
     )
+
+
+def test_calculate_positions_returns_sun_and_moon_positions() -> None:
+    """Verify that Sun and Moon positions are calculated."""
+    astronomy_calculator = MagicMock(spec=AstronomyCalculator)
+
+    sun_position = CelestialPosition(
+        right_ascension=150.0,
+        declination=20.0,
+    )
+    moon_position = CelestialPosition(
+        right_ascension=151.0,
+        declination=20.5,
+    )
+
+    astronomy_calculator.get_sun_position.return_value = sun_position
+    astronomy_calculator.get_moon_position.return_value = moon_position
+
+    calculator = EclipseCalculator(astronomy_calculator)
+
+    timestamp = datetime(
+        2026,
+        8,
+        25,
+        12,
+        0,
+        tzinfo=UTC,
+    )
+
+    result = calculator.calculate_positions(timestamp)
+
+    assert result == (sun_position, moon_position)
+
+    astronomy_calculator.get_sun_position.assert_called_once_with(timestamp)
+    astronomy_calculator.get_moon_position.assert_called_once_with(timestamp)

@@ -1,5 +1,7 @@
 """Eclipse calculation utilities."""
 
+from datetime import datetime
+
 from eclipse_cli.astronomy.calculator import AstronomyCalculator
 from eclipse_cli.astronomy.models import CelestialPosition
 
@@ -33,3 +35,21 @@ class EclipseCalculator:
             sun_position,
             moon_position,
         )
+
+    def calculate_positions(
+            self,
+            timestamp: datetime,
+    ) -> tuple[CelestialPosition, CelestialPosition]:
+        """
+        Calculate the apparent positions of the Sun and Moon.
+
+        Args:
+            timestamp: Timestamp for the calculation.
+
+        Returns:
+            Tuple containing Sun position and Moon position.
+        """
+        sun_position = self._astronomy.get_sun_position(timestamp)
+        moon_position = self._astronomy.get_moon_position(timestamp)
+
+        return sun_position, moon_position
