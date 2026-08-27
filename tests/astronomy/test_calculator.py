@@ -114,3 +114,54 @@ def test_validate_timestamp_rejects_timezone_naive_datetime() -> None:
         match="Timestamp must be timezone-aware",
     ):
         AstronomyCalculator._validate_timestamp(timestamp)
+
+
+def test_get_moon_position_returns_coordinates() -> None:
+    """Verify that the Moon position is returned in degrees."""
+    calculator, kernel = create_calculator()
+
+    timescale = MagicMock()
+    time = MagicMock()
+
+    right_ascension = MagicMock()
+    right_ascension.hours = 8.0
+
+    declination = MagicMock()
+    declination.degrees = -10.0
+
+    apparent = MagicMock()
+    apparent.radec.return_value = (
+        right_ascension,
+        declination,
+        MagicMock(),
+    )
+
+    kernel.timescale.return_value = timescale
+    timescale.from_datetime.return_value = time
+
+    earth = MagicMock()
+    moon = MagicMock()
+
+    kernel.__getitem__.side_effect = {
+        "earth": earth,
+        "moon": moon,
+    }.__getitem__
+
+    earth.at.return_value.observe.return_value.apparent.return_value = apparent
+
+    timestamp = datetime(
+        2026,
+        8,
+        25,
+        12,
+        0,
+        tzinfo=UTC,
+    )
+
+    result = calculator.get_moon_position(timestamp)
+
+    assert result == CelestialPosition(
+        right_ascension=120.0,
+        declination=-10.0,
+    )
+    timescale.from_datetime.assert_called_once_with(timestamp)

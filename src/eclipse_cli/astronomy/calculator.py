@@ -51,3 +51,37 @@ class AstronomyCalculator:
         """Validate an astronomical calculation timestamp."""
         if timestamp.tzinfo is None:
             raise ValueError("Timestamp must be timezone-aware.")
+
+    def get_moon_position(
+            self,
+            timestamp: datetime,
+    ) -> CelestialPosition:
+        """
+        Calculate the apparent position of the Moon.
+
+        Args:
+            timestamp: UTC datetime for the calculation.
+
+        Returns:
+            Apparent Moon position as celestial coordinates.
+
+        Raises:
+            ValueError: If the timestamp is not timezone-aware.
+        """
+        self._validate_timestamp(timestamp)
+
+        utc_timestamp = timestamp.astimezone(UTC)
+
+        timescale = self._ephemeris.kernel.timescale()
+        time = timescale.from_datetime(utc_timestamp)
+
+        earth = self._ephemeris.kernel["earth"]
+        moon = self._ephemeris.kernel["moon"]
+
+        apparent = earth.at(time).observe(moon).apparent()
+        right_ascension, declination, _ = apparent.radec()
+
+        return CelestialPosition(
+            right_ascension=right_ascension.hours * 15.0,
+            declination=declination.degrees,
+        )
