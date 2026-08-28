@@ -31,4 +31,4 @@ class EclipseResult:
     sun_position: CelestialPosition
     moon_position: CelestialPosition
     angular_separation: float
-    is_eclipse: bool
+    is_eclipse: bool = False

@@ -77,9 +77,14 @@ class EclipseCalculator:
         )
 
     @staticmethod
-    def is_eclipse_candidate(result: EclipseResult) -> bool:
+    def is_eclipse_candidate(
+        result: EclipseResult,
+    ) -> bool:
         """Determine whether a calculation result is an eclipse candidate."""
-        return result.angular_separation <= ECLIPSE_SEPARATION_THRESHOLD_DEGREES
+        return (
+            result.angular_separation
+            <= ECLIPSE_SEPARATION_THRESHOLD_DEGREES
+        )
 
     def calculate(
         self,
@@ -101,9 +106,17 @@ class EclipseCalculator:
             moon_position,
         )
 
-        return EclipseResult(
+        result = EclipseResult(
             timestamp=timestamp,
             sun_position=sun_position,
             moon_position=moon_position,
             angular_separation=angular_separation,
+        )
+
+        return EclipseResult(
+            timestamp=result.timestamp,
+            sun_position=result.sun_position,
+            moon_position=result.moon_position,
+            angular_separation=result.angular_separation,
+            is_eclipse=self.is_eclipse_candidate(result),
         )
