@@ -1,6 +1,7 @@
 """Astronomical data models."""
 
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 
 from skyfield.jpllib import SpiceKernel
@@ -20,3 +21,13 @@ class CelestialPosition:
 
     right_ascension: float
     declination: float
+
+
+@dataclass(frozen=True, slots=True)
+class EclipseResult:
+    """Represent the result of an astronomical eclipse calculation."""
+
+    timestamp: datetime
+    sun_position: CelestialPosition
+    moon_position: CelestialPosition
+    angular_separation: float
