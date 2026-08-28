@@ -177,3 +177,10 @@ def test_calculate_returns_eclipse_result() -> None:
     assert result.sun_position == sun_position
     assert result.moon_position == moon_position
     assert result.angular_separation == 0.8
+
+    astronomy_calculator.get_sun_position.assert_called_once_with(timestamp)
+    astronomy_calculator.get_moon_position.assert_called_once_with(timestamp)
+    astronomy_calculator.calculate_angular_separation.assert_called_once_with(
+        sun_position,
+        moon_position,
+    )
