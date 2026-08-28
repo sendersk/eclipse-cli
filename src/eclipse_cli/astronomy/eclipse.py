@@ -77,13 +77,22 @@ class EclipseCalculator:
         )
 
     @staticmethod
+    def _is_within_eclipse_threshold(
+            angular_separation: float,
+    ) -> bool:
+        """Determine whether angular separation is within the eclipse threshold."""
+        return (
+                angular_separation
+                <= ECLIPSE_SEPARATION_THRESHOLD_DEGREES
+        )
+
+    @staticmethod
     def is_eclipse_candidate(
-        result: EclipseResult,
+            result: EclipseResult,
     ) -> bool:
         """Determine whether a calculation result is an eclipse candidate."""
-        return (
-            result.angular_separation
-            <= ECLIPSE_SEPARATION_THRESHOLD_DEGREES
+        return EclipseCalculator._is_within_eclipse_threshold(
+            result.angular_separation,
         )
 
     def calculate(
