@@ -12,11 +12,13 @@ class EclipseCalculator:
     """Determine whether celestial positions indicate an eclipse."""
 
     def __init__(
-        self,
-        astronomy_calculator: AstronomyCalculator,
+            self,
+            astronomy_calculator: AstronomyCalculator,
+            separation_threshold_degrees: float = ECLIPSE_SEPARATION_THRESHOLD_DEGREES,
     ) -> None:
         """Initialize the eclipse calculator."""
         self._astronomy = astronomy_calculator
+        self._separation_threshold_degrees = separation_threshold_degrees
 
     def calculate_separation(
         self,
@@ -76,28 +78,26 @@ class EclipseCalculator:
             moon_position,
         )
 
-    @staticmethod
     def _is_within_eclipse_threshold(
+            self,
             angular_separation: float,
     ) -> bool:
         """Determine whether angular separation is within the eclipse threshold."""
-        return (
-                angular_separation
-                <= ECLIPSE_SEPARATION_THRESHOLD_DEGREES
-        )
+        return angular_separation <= self._separation_threshold_degrees
 
     @staticmethod
     def is_eclipse_candidate(
             result: EclipseResult,
     ) -> bool:
         """Determine whether a calculation result is an eclipse candidate."""
-        return EclipseCalculator._is_within_eclipse_threshold(
-            result.angular_separation,
+        return (
+                result.angular_separation
+                <= ECLIPSE_SEPARATION_THRESHOLD_DEGREES
         )
 
     def calculate(
-        self,
-        timestamp: datetime,
+            self,
+            timestamp: datetime,
     ) -> EclipseResult:
         """
         Calculate the complete eclipse result for a timestamp.
@@ -115,17 +115,14 @@ class EclipseCalculator:
             moon_position,
         )
 
-        result = EclipseResult(
+        is_eclipse_candidate = self._is_within_eclipse_threshold(
+            angular_separation,
+        )
+
+        return EclipseResult(
             timestamp=timestamp,
             sun_position=sun_position,
             moon_position=moon_position,
             angular_separation=angular_separation,
-        )
-
-        return EclipseResult(
-            timestamp=result.timestamp,
-            sun_position=result.sun_position,
-            moon_position=result.moon_position,
-            angular_separation=result.angular_separation,
-            is_eclipse_candidate=self.is_eclipse_candidate(result),
+            is_eclipse_candidate=is_eclipse_candidate,
         )

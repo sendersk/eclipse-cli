@@ -310,3 +310,40 @@ def test_calculate_result_can_be_rejected_as_eclipse_candidate() -> None:
 
     assert result.angular_separation == 5.0
     assert EclipseCalculator.is_eclipse_candidate(result) is False
+
+
+def test_custom_separation_threshold_is_used() -> None:
+    """Verify that a custom eclipse separation threshold is respected."""
+    astronomy_calculator = MagicMock()
+    calculator = EclipseCalculator(
+        astronomy_calculator,
+        separation_threshold_degrees=2.0,
+    )
+
+    timestamp = datetime(
+        2026,
+        8,
+        25,
+        12,
+        0,
+        tzinfo=UTC,
+    )
+
+    sun_position = CelestialPosition(
+        right_ascension=150.0,
+        declination=20.0,
+    )
+
+    moon_position = CelestialPosition(
+        right_ascension=151.0,
+        declination=20.5,
+    )
+
+    astronomy_calculator.get_sun_position.return_value = sun_position
+    astronomy_calculator.get_moon_position.return_value = moon_position
+    astronomy_calculator.calculate_angular_separation.return_value = 1.8
+
+    result = calculator.calculate(timestamp)
+
+    assert result.angular_separation == 1.8
+    assert result.is_eclipse_candidate is True
