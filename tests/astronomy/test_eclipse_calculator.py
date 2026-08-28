@@ -241,3 +241,69 @@ def test_is_eclipse_candidate_returns_false_above_threshold() -> None:
     assert EclipseCalculator.is_eclipse_candidate(result) is False
 
 
+def test_calculate_result_can_be_evaluated_as_eclipse_candidate() -> None:
+    """Verify that a calculated result can be evaluated as an eclipse candidate."""
+    astronomy_calculator = MagicMock()
+    calculator = EclipseCalculator(astronomy_calculator)
+
+    timestamp = datetime(
+        2026,
+        8,
+        25,
+        12,
+        0,
+        tzinfo=UTC,
+    )
+
+    sun_position = CelestialPosition(
+        right_ascension=150.0,
+        declination=20.0,
+    )
+
+    moon_position = CelestialPosition(
+        right_ascension=150.5,
+        declination=20.2,
+    )
+
+    astronomy_calculator.get_sun_position.return_value = sun_position
+    astronomy_calculator.get_moon_position.return_value = moon_position
+    astronomy_calculator.calculate_angular_separation.return_value = 0.8
+
+    result = calculator.calculate(timestamp)
+
+    assert result.angular_separation == 0.8
+    assert EclipseCalculator.is_eclipse_candidate(result) is True
+
+
+def test_calculate_result_can_be_rejected_as_eclipse_candidate() -> None:
+    """Verify that a calculated result can be rejected as an eclipse candidate."""
+    astronomy_calculator = MagicMock()
+    calculator = EclipseCalculator(astronomy_calculator)
+
+    timestamp = datetime(
+        2026,
+        8,
+        25,
+        12,
+        0,
+        tzinfo=UTC,
+    )
+
+    sun_position = CelestialPosition(
+        right_ascension=150.0,
+        declination=20.0,
+    )
+
+    moon_position = CelestialPosition(
+        right_ascension=155.0,
+        declination=25.0,
+    )
+
+    astronomy_calculator.get_sun_position.return_value = sun_position
+    astronomy_calculator.get_moon_position.return_value = moon_position
+    astronomy_calculator.calculate_angular_separation.return_value = 5.0
+
+    result = calculator.calculate(timestamp)
+
+    assert result.angular_separation == 5.0
+    assert EclipseCalculator.is_eclipse_candidate(result) is False
