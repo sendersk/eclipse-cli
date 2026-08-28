@@ -266,3 +266,48 @@ def test_calculate_eclipse_result_returns_complete_result(
         sun_position,
         moon_position,
     )
+
+
+def test_calculate_eclipse_result_calculates_separation_from_positions(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Verify that eclipse result uses calculated celestial positions."""
+    calculator, _ = create_calculator()
+
+    timestamp = datetime(
+        2026,
+        8,
+        25,
+        12,
+        0,
+        tzinfo=UTC,
+    )
+
+    sun_position = MagicMock()
+    moon_position = MagicMock()
+
+    calculate_positions = MagicMock(
+        return_value=(sun_position, moon_position),
+    )
+    calculate_separation = MagicMock(return_value=1.8)
+
+    monkeypatch.setattr(
+        calculator,
+        "calculate_positions",
+        calculate_positions,
+    )
+    monkeypatch.setattr(
+        calculator,
+        "calculate_separation",
+        calculate_separation,
+    )
+
+    result = calculator.calculate_eclipse_result(timestamp)
+
+    calculate_positions.assert_called_once_with(timestamp)
+    calculate_separation.assert_called_once_with(
+        sun_position,
+        moon_position,
+    )
+
+    assert result.angular_separation == 1.8
