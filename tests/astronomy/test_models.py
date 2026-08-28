@@ -72,12 +72,14 @@ def test_eclipse_result_stores_calculation_result() -> None:
         sun_position=sun_position,
         moon_position=moon_position,
         angular_separation=1.8,
+        is_eclipse=False,
     )
 
     assert result.timestamp == timestamp
     assert result.sun_position == sun_position
     assert result.moon_position == moon_position
     assert result.angular_separation == 1.8
+    assert result.is_eclipse is False
 
 
 def test_eclipse_result_stores_eclipse_status() -> None:
@@ -106,6 +108,7 @@ def test_eclipse_result_stores_eclipse_status() -> None:
         sun_position=sun_position,
         moon_position=moon_position,
         angular_separation=0.8,
+        is_eclipse=True,
     )
 
     assert result
