@@ -122,24 +122,29 @@ def test_calculate_angular_separation_uses_positions() -> None:
     astronomy_calculator.get_moon_position.assert_called_once_with(timestamp)
 
 
-def test_is_eclipse_candidate_returns_true_below_threshold() -> None:
-    """Verify that a separation below the threshold is an eclipse candidate."""
-    assert EclipseCalculator.is_eclipse_candidate(0.5) is True
-
-
 def test_is_eclipse_candidate_returns_true_at_threshold() -> None:
-    """Verify that a separation at the threshold is an eclipse candidate."""
-    assert (
-        EclipseCalculator.is_eclipse_candidate(
-            ECLIPSE_SEPARATION_THRESHOLD_DEGREES,
-        )
-        is True
+    """Verify that the threshold itself is considered a candidate."""
+    result = EclipseResult(
+        timestamp=datetime(
+            2026,
+            8,
+            25,
+            12,
+            0,
+            tzinfo=UTC,
+        ),
+        sun_position=CelestialPosition(
+            right_ascension=150.0,
+            declination=20.0,
+        ),
+        moon_position=CelestialPosition(
+            right_ascension=151.0,
+            declination=20.5,
+        ),
+        angular_separation=1.0,
     )
 
-
-def test_is_eclipse_candidate_returns_false_above_threshold() -> None:
-    """Verify that a separation above the threshold is not an eclipse candidate."""
-    assert EclipseCalculator.is_eclipse_candidate(1.5) is False
+    assert EclipseCalculator.is_eclipse_candidate(result) is True
 
 
 def test_calculate_returns_eclipse_result() -> None:
@@ -184,3 +189,55 @@ def test_calculate_returns_eclipse_result() -> None:
         sun_position,
         moon_position,
     )
+
+
+def test_is_eclipse_candidate_returns_true_within_threshold() -> None:
+    """Verify that a result within the threshold is an eclipse candidate."""
+    result = EclipseResult(
+        timestamp=datetime(
+            2026,
+            8,
+            25,
+            12,
+            0,
+            tzinfo=UTC,
+        ),
+        sun_position=CelestialPosition(
+            right_ascension=150.0,
+            declination=20.0,
+        ),
+        moon_position=CelestialPosition(
+            right_ascension=151.0,
+            declination=20.5,
+        ),
+        angular_separation=0.8,
+    )
+
+    assert EclipseCalculator.is_eclipse_candidate(result) is True
+
+
+def test_is_eclipse_candidate_returns_false_above_threshold() -> None:
+    """Verify that a result above the threshold is not an eclipse candidate."""
+    result = EclipseResult(
+        timestamp=datetime(
+            2026,
+            8,
+            25,
+            12,
+            0,
+            tzinfo=UTC,
+        ),
+        sun_position=CelestialPosition(
+            right_ascension=150.0,
+            declination=20.0,
+        ),
+        moon_position=CelestialPosition(
+            right_ascension=151.0,
+            declination=20.5,
+        ),
+        angular_separation=1.1,
+    )
+
+    assert EclipseCalculator.is_eclipse_candidate(result) is False
+
+
