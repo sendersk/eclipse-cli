@@ -108,12 +108,9 @@ class AstronomyCalculator:
         first_dec = radians(first.declination)
         second_dec = radians(second.declination)
 
-        cosine = (
-            sin(first_dec) * sin(second_dec)
-            + cos(first_dec)
-            * cos(second_dec)
-            * cos(first_ra - second_ra)
-        )
+        cosine = sin(first_dec) * sin(second_dec) + cos(first_dec) * cos(
+            second_dec
+        ) * cos(first_ra - second_ra)
 
         # Protect against floating-point rounding outside [-1, 1].
         cosine = max(-1.0, min(1.0, cosine))
