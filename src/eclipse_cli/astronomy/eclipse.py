@@ -53,3 +53,23 @@ class EclipseCalculator:
         moon_position = self._astronomy.get_moon_position(timestamp)
 
         return sun_position, moon_position
+
+    def calculate_angular_separation(
+            self,
+            timestamp: datetime,
+    ) -> float:
+        """
+        Calculate the angular separation between the Sun and Moon.
+
+        Args:
+            timestamp: Timestamp for the calculation.
+
+        Returns:
+            Angular separation in degrees.
+        """
+        sun_position, moon_position = self.calculate_positions(timestamp)
+
+        return self.calculate_separation(
+            sun_position,
+            moon_position,
+        )
