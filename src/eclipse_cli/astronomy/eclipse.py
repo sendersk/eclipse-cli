@@ -39,8 +39,8 @@ class EclipseCalculator:
         )
 
     def calculate_positions(
-            self,
-            timestamp: datetime,
+        self,
+        timestamp: datetime,
     ) -> tuple[CelestialPosition, CelestialPosition]:
         """
         Calculate the apparent positions of the Sun and Moon.
@@ -57,8 +57,8 @@ class EclipseCalculator:
         return sun_position, moon_position
 
     def calculate_angular_separation(
-            self,
-            timestamp: datetime,
+        self,
+        timestamp: datetime,
     ) -> float:
         """
         Calculate the angular separation between the Sun and Moon.
@@ -77,27 +77,16 @@ class EclipseCalculator:
         )
 
     @staticmethod
-    def is_eclipse_candidate(
-            result: EclipseResult,
-    ) -> bool:
-        """
-        Determine whether the calculated result is an eclipse candidate.
-
-        Args:
-            result: Complete eclipse calculation result.
-
-        Returns:
-            True if the angular separation is within the eclipse
-            candidate threshold.
-        """
+    def is_eclipse_candidate(result: EclipseResult) -> bool:
+        """Determine whether a calculation result is an eclipse candidate."""
         return (
-                result.angular_separation
-                <= ECLIPSE_SEPARATION_THRESHOLD_DEGREES
+            result.angular_separation
+            <= ECLIPSE_SEPARATION_THRESHOLD_DEGREES
         )
 
     def calculate(
-            self,
-            timestamp: datetime,
+        self,
+        timestamp: datetime,
     ) -> EclipseResult:
         """
         Calculate the complete eclipse result for a timestamp.

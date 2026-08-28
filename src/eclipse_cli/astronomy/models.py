@@ -25,7 +25,7 @@ class CelestialPosition:
 
 @dataclass(frozen=True, slots=True)
 class EclipseResult:
-    """Represent the result of an astronomical eclipse calculation."""
+    """Represent the result of an eclipse calculation."""
 
     timestamp: datetime
     sun_position: CelestialPosition
