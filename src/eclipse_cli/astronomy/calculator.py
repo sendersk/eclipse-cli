@@ -3,7 +3,7 @@
 from datetime import UTC, datetime
 from math import acos, cos, degrees, radians, sin
 
-from eclipse_cli.astronomy.models import CelestialPosition, EphemerisData
+from eclipse_cli.astronomy.models import CelestialPosition, EphemerisData, EclipseResult
 
 
 class AstronomyCalculator:
@@ -119,3 +119,52 @@ class AstronomyCalculator:
         cosine = max(-1.0, min(1.0, cosine))
 
         return degrees(acos(cosine))
+
+    def calculate_positions(
+            self,
+            timestamp: datetime,
+    ) -> tuple[CelestialPosition, CelestialPosition]:
+        """Calculate the apparent positions of the Sun and Moon."""
+        sun_position = self.get_sun_position(timestamp)
+        moon_position = self.get_moon_position(timestamp)
+
+        return sun_position, moon_position
+
+    @staticmethod
+    def calculate_separation(
+            sun_position: CelestialPosition,
+            moon_position: CelestialPosition,
+    ) -> float:
+        """Calculate the angular separation between the Sun and Moon."""
+        return AstronomyCalculator.calculate_angular_separation(
+            sun_position,
+            moon_position,
+        )
+
+    def calculate_eclipse_result(
+            self,
+            timestamp: datetime,
+    ) -> EclipseResult:
+        """
+        Calculate the complete eclipse-related result for a timestamp.
+
+        Args:
+            timestamp: Datetime for the calculation.
+
+        Returns:
+            Calculated eclipse result containing both celestial positions
+            and their angular separation.
+        """
+        sun_position, moon_position = self.calculate_positions(timestamp)
+
+        angular_separation = self.calculate_separation(
+            sun_position,
+            moon_position,
+        )
+
+        return EclipseResult(
+            timestamp=timestamp,
+            sun_position=sun_position,
+            moon_position=moon_position,
+            angular_separation=angular_separation,
+        )

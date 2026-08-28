@@ -218,3 +218,51 @@ def test_calculate_angular_separation_uses_declination() -> None:
     )
 
     assert result == pytest.approx(30.0)
+
+
+def test_calculate_eclipse_result_returns_complete_result(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Verify that a complete eclipse result is returned."""
+    calculator, _ = create_calculator()
+
+    timestamp = datetime(
+        2026,
+        8,
+        25,
+        12,
+        0,
+        tzinfo=UTC,
+    )
+
+    sun_position = MagicMock()
+    moon_position = MagicMock()
+
+    calculate_positions = MagicMock(
+        return_value=(sun_position, moon_position),
+    )
+    calculate_separation = MagicMock(return_value=1.8)
+
+    monkeypatch.setattr(
+        calculator,
+        "calculate_positions",
+        calculate_positions,
+    )
+    monkeypatch.setattr(
+        calculator,
+        "calculate_separation",
+        calculate_separation,
+    )
+
+    result = calculator.calculate_eclipse_result(timestamp)
+
+    assert result.timestamp == timestamp
+    assert result.sun_position is sun_position
+    assert result.moon_position is moon_position
+    assert result.angular_separation == 1.8
+
+    calculate_positions.assert_called_once_with(timestamp)
+    calculate_separation.assert_called_once_with(
+        sun_position,
+        moon_position,
+    )
