@@ -141,19 +141,15 @@ class AstronomyCalculator:
             moon_position,
         )
 
-    def calculate_eclipse_result(
-            self,
-            timestamp: datetime,
-    ) -> EclipseResult:
+    def calculate(self, timestamp: datetime) -> EclipseResult:
         """
-        Calculate the complete eclipse-related result for a timestamp.
+        Calculate the astronomical state for a given timestamp.
 
         Args:
-            timestamp: Datetime for the calculation.
+            timestamp: Time of the calculation.
 
         Returns:
-            Calculated eclipse result containing both celestial positions
-            and their angular separation.
+            Complete eclipse calculation result.
         """
         sun_position, moon_position = self.calculate_positions(timestamp)
 
@@ -169,15 +165,19 @@ class AstronomyCalculator:
             angular_separation=angular_separation,
         )
 
-    def calculate(self, timestamp: datetime) -> EclipseResult:
+    def calculate_eclipse_result(
+            self,
+            timestamp: datetime,
+    ) -> EclipseResult:
         """
-        Calculate the astronomical state for a given timestamp.
+        Calculate the complete eclipse-related result for a timestamp.
 
         Args:
-            timestamp: Time of the calculation.
+            timestamp: Datetime for the calculation.
 
         Returns:
-            Complete eclipse calculation result.
+            Calculated eclipse result containing both celestial positions
+            and their angular separation.
         """
         sun_position, moon_position = self.calculate_positions(timestamp)
 
