@@ -118,5 +118,5 @@ class EclipseCalculator:
             sun_position=result.sun_position,
             moon_position=result.moon_position,
             angular_separation=result.angular_separation,
-            is_eclipse=self.is_eclipse_candidate(result),
+            is_eclipse_candidate=self.is_eclipse_candidate(result),
         )

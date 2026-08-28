@@ -142,7 +142,7 @@ def test_is_eclipse_candidate_returns_true_at_threshold() -> None:
             declination=20.5,
         ),
         angular_separation=1.0,
-        is_eclipse=False,
+        is_eclipse_candidate=False,
     )
 
     assert EclipseCalculator.is_eclipse_candidate(result) is True
@@ -212,7 +212,7 @@ def test_is_eclipse_candidate_returns_true_within_threshold() -> None:
             declination=20.5,
         ),
         angular_separation=0.8,
-        is_eclipse=False,
+        is_eclipse_candidate=False,
     )
 
     assert EclipseCalculator.is_eclipse_candidate(result) is True
@@ -238,7 +238,7 @@ def test_is_eclipse_candidate_returns_false_above_threshold() -> None:
             declination=20.5,
         ),
         angular_separation=1.1,
-        is_eclipse=False,
+        is_eclipse_candidate=False,
     )
 
     assert EclipseCalculator.is_eclipse_candidate(result) is False
