@@ -5,6 +5,8 @@ from datetime import datetime
 from eclipse_cli.astronomy.calculator import AstronomyCalculator
 from eclipse_cli.astronomy.models import CelestialPosition
 
+ECLIPSE_SEPARATION_THRESHOLD_DEGREES = 1.0
+
 
 class EclipseCalculator:
     """Determine whether celestial positions indicate an eclipse."""
@@ -73,3 +75,10 @@ class EclipseCalculator:
             sun_position,
             moon_position,
         )
+
+    @staticmethod
+    def is_eclipse_candidate(
+            angular_separation: float,
+    ) -> bool:
+        """Determine whether an angular separation is small enough for an eclipse candidate."""
+        return angular_separation <= ECLIPSE_SEPARATION_THRESHOLD_DEGREES

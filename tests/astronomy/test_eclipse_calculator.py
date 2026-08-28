@@ -9,6 +9,8 @@ from eclipse_cli.astronomy.calculator import AstronomyCalculator
 from eclipse_cli.astronomy.eclipse import EclipseCalculator
 from eclipse_cli.astronomy.models import CelestialPosition
 
+ECLIPSE_SEPARATION_THRESHOLD_DEGREES = 1.0
+
 
 def test_eclipse_calculator_initializes() -> None:
     """Verify that the eclipse calculator initializes."""
@@ -118,3 +120,23 @@ def test_calculate_angular_separation_uses_positions() -> None:
 
     astronomy_calculator.get_sun_position.assert_called_once_with(timestamp)
     astronomy_calculator.get_moon_position.assert_called_once_with(timestamp)
+
+
+def test_is_eclipse_candidate_returns_true_below_threshold() -> None:
+    """Verify that a separation below the threshold is an eclipse candidate."""
+    assert EclipseCalculator.is_eclipse_candidate(0.5) is True
+
+
+def test_is_eclipse_candidate_returns_true_at_threshold() -> None:
+    """Verify that a separation at the threshold is an eclipse candidate."""
+    assert (
+        EclipseCalculator.is_eclipse_candidate(
+            ECLIPSE_SEPARATION_THRESHOLD_DEGREES,
+        )
+        is True
+    )
+
+
+def test_is_eclipse_candidate_returns_false_above_threshold() -> None:
+    """Verify that a separation above the threshold is not an eclipse candidate."""
+    assert EclipseCalculator.is_eclipse_candidate(1.5) is False
