@@ -168,3 +168,27 @@ class AstronomyCalculator:
             moon_position=moon_position,
             angular_separation=angular_separation,
         )
+
+    def calculate(self, timestamp: datetime) -> EclipseResult:
+        """
+        Calculate the astronomical state for a given timestamp.
+
+        Args:
+            timestamp: Time of the calculation.
+
+        Returns:
+            Complete eclipse calculation result.
+        """
+        sun_position, moon_position = self.calculate_positions(timestamp)
+
+        angular_separation = self.calculate_separation(
+            sun_position,
+            moon_position,
+        )
+
+        return EclipseResult(
+            timestamp=timestamp,
+            sun_position=sun_position,
+            moon_position=moon_position,
+            angular_separation=angular_separation,
+        )

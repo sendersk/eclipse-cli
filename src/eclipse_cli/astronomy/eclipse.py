@@ -3,7 +3,7 @@
 from datetime import datetime
 
 from eclipse_cli.astronomy.calculator import AstronomyCalculator
-from eclipse_cli.astronomy.models import CelestialPosition
+from eclipse_cli.astronomy.models import CelestialPosition, EclipseResult
 
 ECLIPSE_SEPARATION_THRESHOLD_DEGREES = 1.0
 
@@ -82,3 +82,30 @@ class EclipseCalculator:
     ) -> bool:
         """Determine whether an angular separation is small enough for an eclipse candidate."""
         return angular_separation <= ECLIPSE_SEPARATION_THRESHOLD_DEGREES
+
+    def calculate(
+            self,
+            timestamp: datetime,
+    ) -> EclipseResult:
+        """
+        Calculate the complete eclipse result for a timestamp.
+
+        Args:
+            timestamp: Timestamp for the calculation.
+
+        Returns:
+            Complete eclipse calculation result.
+        """
+        sun_position, moon_position = self.calculate_positions(timestamp)
+
+        angular_separation = self.calculate_separation(
+            sun_position,
+            moon_position,
+        )
+
+        return EclipseResult(
+            timestamp=timestamp,
+            sun_position=sun_position,
+            moon_position=moon_position,
+            angular_separation=angular_separation,
+        )

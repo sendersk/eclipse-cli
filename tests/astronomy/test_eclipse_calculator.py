@@ -7,7 +7,7 @@ import pytest
 
 from eclipse_cli.astronomy.calculator import AstronomyCalculator
 from eclipse_cli.astronomy.eclipse import EclipseCalculator
-from eclipse_cli.astronomy.models import CelestialPosition
+from eclipse_cli.astronomy.models import CelestialPosition, EclipseResult
 
 ECLIPSE_SEPARATION_THRESHOLD_DEGREES = 1.0
 
@@ -140,3 +140,40 @@ def test_is_eclipse_candidate_returns_true_at_threshold() -> None:
 def test_is_eclipse_candidate_returns_false_above_threshold() -> None:
     """Verify that a separation above the threshold is not an eclipse candidate."""
     assert EclipseCalculator.is_eclipse_candidate(1.5) is False
+
+
+def test_calculate_returns_eclipse_result() -> None:
+    """Verify that a complete calculation returns an EclipseResult."""
+    astronomy_calculator = MagicMock()
+    calculator = EclipseCalculator(astronomy_calculator)
+
+    timestamp = datetime(
+        2026,
+        8,
+        25,
+        12,
+        0,
+        tzinfo=UTC,
+    )
+
+    sun_position = CelestialPosition(
+        right_ascension=150.0,
+        declination=20.0,
+    )
+
+    moon_position = CelestialPosition(
+        right_ascension=151.0,
+        declination=20.5,
+    )
+
+    astronomy_calculator.get_sun_position.return_value = sun_position
+    astronomy_calculator.get_moon_position.return_value = moon_position
+    astronomy_calculator.calculate_angular_separation.return_value = 0.8
+
+    result = calculator.calculate(timestamp)
+
+    assert isinstance(result, EclipseResult)
+    assert result.timestamp == timestamp
+    assert result.sun_position == sun_position
+    assert result.moon_position == moon_position
+    assert result.angular_separation == 0.8
