@@ -347,3 +347,17 @@ def test_custom_separation_threshold_is_used() -> None:
 
     assert result.angular_separation == 1.8
     assert result.is_eclipse_candidate is True
+
+
+def test_negative_separation_threshold_is_rejected() -> None:
+    """Verify that a negative separation threshold is rejected."""
+    astronomy_calculator = MagicMock()
+
+    with pytest.raises(
+        ValueError,
+        match="Separation threshold must not be negative.",
+    ):
+        EclipseCalculator(
+            astronomy_calculator,
+            separation_threshold_degrees=-1.0,
+        )

@@ -17,6 +17,11 @@ class EclipseCalculator:
             separation_threshold_degrees: float = ECLIPSE_SEPARATION_THRESHOLD_DEGREES,
     ) -> None:
         """Initialize the eclipse calculator."""
+        if separation_threshold_degrees < 0.0:
+            raise ValueError(
+                "Separation threshold must not be negative.",
+            )
+
         self._astronomy = astronomy_calculator
         self._separation_threshold_degrees = separation_threshold_degrees
 
